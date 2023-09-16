@@ -8,7 +8,7 @@
 
 {#each block as blockItem}
     {#if blockItem.text}
-        <span class:bold={blockItem.annotations.bold}
+        <span class:font-bold={blockItem.annotations.bold}
             class:italic={blockItem.annotations.italic}
             class:strikethrough={blockItem.annotations.strikethrough}
             class:underline={blockItem.annotations.underline}

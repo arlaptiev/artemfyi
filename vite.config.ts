@@ -5,5 +5,9 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
-	}
+	},
+	// build: {
+	// 	// Disables the preload. TODO remove for self-hosted version of site
+	// 	modulePreload: false,
+	// }
 });

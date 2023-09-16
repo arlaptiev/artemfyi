@@ -16,9 +16,9 @@
         const [filename, ____] = rest.split('?')
 
         const params = new URLSearchParams(url);
-        const cred = encodeURIComponent(params.get('X-Amz-Credential'))
-        const date = params.get('X-Amz-Date')
-        const sign = params.get('X-Amz-Signature')
+        const cred = params.get('X-Amz-Credential').split('/')[0];
+        const date = params.get('X-Amz-Date');
+        const sign = params.get('X-Amz-Signature');
         
         return `${x1}/${x2}/${cred}/${date}/${sign}/${filename}`
     }

@@ -29,15 +29,15 @@
 
 <style lang="postcss">
     .notion__heading {
-        @apply font-bold;
+        /* @apply font-bold; */
     }
     .notion__heading--h1 {
-        @apply text-3xl;
+        @apply text-4xl;
     }
     .notion__heading--h2 {
-        @apply text-2xl;
+        @apply text-3xl;
     }
     .notion__heading--h3 {
-        @apply text-xl;
+        @apply text-2xl;
     }
 </style>

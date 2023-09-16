@@ -14,5 +14,5 @@ export type NotionImgParams = {
  */
 export async function GET({ params }: { params: NotionImgParams }) {
   const { x1, x2, cred, date, sign, filename } = params;
-  return fetch(`https://prod-files-secure.s3.us-west-2.amazonaws.com/${x1}/${x2}/${filename}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=${cred}&X-Amz-Date=${date}&X-Amz-Expires=3600&X-Amz-Signature=${sign}&X-Amz-SignedHeaders=host&x-id=GetObject`);
+  return fetch(`https://prod-files-secure.s3.us-west-2.amazonaws.com/${x1}/${x2}/${filename}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=${cred}%2F${date.split('T')[0]}%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=${date}&X-Amz-Expires=3600&X-Amz-Signature=${sign}&X-Amz-SignedHeaders=host&x-id=GetObject`);
 }

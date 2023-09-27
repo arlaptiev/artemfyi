@@ -3,6 +3,9 @@ const fs = require('fs/promises');
 const path = require('path');
 
 
+/**
+ * CLEAN AND MOVE BUILD FOLDER
+ */
 async function cleanAndMoveBuildFolder() {
   const buildPath = path.join(__dirname, 'build');
   const clientPath = path.join(buildPath, 'client');
@@ -34,6 +37,59 @@ async function cleanAndMoveBuildFolder() {
 }
 
 
+/**
+ * CLEAN AND MOVE IMAGES
+ */
+
+async function moveAndCleanupAssets() {
+  const imgDir = path.join(__dirname, 'build', 'assets', 'img');
+  const imgTempDir = path.join(__dirname, 'build', 'assets', 'img-temp');
+
+  // Rename the existing "img" directory to "img-temp"
+  await fs.rename(imgDir, imgTempDir);
+
+  // Create a new "img" directory
+  await fs.mkdir(imgDir, { recursive: true });
+
+  await recMoveAndCleanupAssets(imgTempDir);
+
+  console.log('Asset cleanup and move complete.');
+}
+
+async function recMoveAndCleanupAssets(directory) {
+  const contents = await fs.readdir(directory);
+
+  for (const item of contents) {
+    const itemPath = path.join(directory, item);
+    const stat = await fs.lstat(itemPath);
+
+    if (stat.isDirectory()) {
+      // Recursively process subdirectories
+      await recMoveAndCleanupAssets(itemPath);
+    } else if (stat.isFile()) {
+      // Process files
+      const subdirName = path.basename(directory);
+      const newDirName = `${subdirName}-${Date.now()}`;
+      const newDirPath = path.join(__dirname, 'build', 'assets', 'img', newDirName);
+
+      // Create the new directory if it doesn't exist
+      await fs.mkdir(newDirPath, { recursive: true });
+
+      // Move the file to the new directory
+      const newFilePath = path.join(newDirPath, item);
+      await fs.rename(itemPath, newFilePath);
+    }
+  }
+
+  // Remove the original directory after processing its contents
+  await fs.rmdir(directory, { recursive: true });
+}
+
+
+/**
+ * UTILS
+ */
+
 async function moveContents(sourceDir, targetDir) {
   const files = await fs.readdir(sourceDir);
 
@@ -44,6 +100,11 @@ async function moveContents(sourceDir, targetDir) {
     await fs.rename(sourceFilePath, targetFilePath);
   }
 }
+
+
+/**
+ * PROCESS HTML FILES
+ */
 
 
 function addPeriodAndHTML(htmlString) {
@@ -70,10 +131,31 @@ function removeJsAndModulePreloadTags(htmlString) {
   return cleanedHTML;
 }
 
+function renameImgSrc(htmlString) {
+  // Regular expression to match img tags with src starting with a period
+  const regex = /<img\b[^>]*src="(\.\/[^"]+)"[^>]*>/g;
+
+  // Find and replace img tags with the updated src attribute
+  const updatedHTML = htmlString.replace(regex, (match, src) => {
+    const idAndFilename = src.replace('./', ''); // Remove the leading "./"
+    const parts = idAndFilename.split('/');
+    const id = parts[2];
+    const filename = parts[parts.length - 1];
+    const newPath = `./assets/img/${id}/${filename}`;
+    return match.replace(src, newPath);
+  });
+
+  return updatedHTML;
+}
+
 
 // Define the function to fix HTML content
 function fixMyHtml(html) {
-  return addPeriodAndHTML(removeJsAndModulePreloadTags(html));
+  return renameImgSrc(
+    addPeriodAndHTML(
+      removeJsAndModulePreloadTags(html)
+      )
+    );
 }
 
 
@@ -115,8 +197,16 @@ async function startProcessingHTMLFiles() {
 }
 
 
+/**
+ * EXECUTE THE FUNCTIONS
+ */
+
 // Call the functions to execute it
 await cleanAndMoveBuildFolder().catch(err => {
+  console.error('Error:', err);
+});
+
+await moveAndCleanupAssets().catch(err => {
   console.error('Error:', err);
 });
 

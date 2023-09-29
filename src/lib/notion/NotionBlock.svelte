@@ -13,9 +13,11 @@
     import NotionBlockBulletedList from './NotionBlockBulletedList.svelte';
     import NotionBlockToggleList from './NotionBlockToggleList.svelte';
     import NotionBlockImage from './NotionBlockImage.svelte';
+    import NotionBlockVideo from './NotionBlockVideo.svelte';
 
     export let block: Block
 </script>
+    <!-- <div>{JSON.stringify(block)}</div> -->
 {#if block.type == 'title'}
     <NotionBlockTitle block={block[block.type]} />
 {:else if block.type == 'heading_1' || block.type == 'heading_2' || block.type == 'heading_3' }
@@ -36,6 +38,8 @@
     <NotionBlockToggleList block={block}  />
 {:else if block.type == 'image'}
     <NotionBlockImage block={block}  />
+{:else if block.type == 'video'}
+    <NotionBlockVideo block={block}  />
 {:else}
     <!-- handle more types (to_do)  -->
 {/if}

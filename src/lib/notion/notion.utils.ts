@@ -38,3 +38,16 @@ export const getAsSensiblyStructuredBlocks = (result) => {
     }
     return ret
 }
+
+
+export const notionAssetUrl2Api = (url) => {
+    const [_, __, ___, x1, x2, rest] = url.split('/')
+    const [filename, ____] = rest.split('?')
+
+    const params = new URLSearchParams(url);
+    const cred = params.get('X-Amz-Credential').split('/')[0];
+    const date = params.get('X-Amz-Date');
+    const sign = params.get('X-Amz-Signature');
+    
+    return `${x1}/${x2}/${cred}/${date}/${sign}/${filename}`
+}
